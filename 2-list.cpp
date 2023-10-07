@@ -23,11 +23,12 @@ typedef struct LNode
 } LNode;
 
 /*双链表结点定义*/
-typedef struct DLNode {
-    int data;            // data中存放结点数据域
-    struct DLNode *prior;// 指向前驱结点的指针
-    struct DLNode *next; // 指向后继节点的指针
-}DLNode;
+typedef struct DLNode
+{
+    int data;             // data中存放结点数据域
+    struct DLNode *prior; // 指向前驱结点的指针
+    struct DLNode *next;  // 指向后继节点的指针
+} DLNode;
 
 int main(int argc, char const *argv[])
 {
@@ -35,6 +36,6 @@ int main(int argc, char const *argv[])
 
     LNode *L = (LNode *)malloc(sizeof(LNode));
     DLNode *DL = (DLNode *)malloc(sizeof(DLNode));
-    
+
     return 0;
 }
