@@ -272,7 +272,77 @@ int findAndDeleteL(LNode *C, int x)
     }
 }
 
-/*双链表的操作*/
+/*双链表的操作
+ * 1. 建表(尾插法)
+ * 2. 查找结点的算法
+ * 3. 插入结点的算法(在p后边插入x)
+ * 4. 删除结点的算法
+ */
+
+// 1
+void createDlistR(DLNode *&L, int a[], int n)
+{
+    DLNode *s, *r;
+    int i;
+    L = (DLNode *)malloc(sizeof(DLNode));
+    L->prior = NULL;
+    L->next = NULL;
+    r = L;
+    for (i = 0; i < n; ++i)
+    {
+        s = (DLNode *)malloc(sizeof(DLNode));
+        s->data = a[i];
+        // 下边3句将s插入到L尾部，并且r指向s，s->prior = r；这一句是和建立单链表不同的地方
+        r->next = s;
+        s->prior = r;
+        r = s;
+    }
+    r->next = NULL;
+}
+
+// 2
+DLNode *findDLNode(DLNode *C, int x)
+{
+    DLNode *p = C->next;
+    while (p != NULL)
+    {
+        if (p->data == x)
+        {
+            break;
+        }
+        p = p->next;
+    }
+    return p; // 如果找到，则p中内容是结点地址（循环因break结束）。如果没找到则p中内容是NULL（循环因p等于NULL而结束）。因此这一句可以将两种返回值的情况统一起来
+}
+
+// 3
+void insertDLNode(DLNode *C, int x, int p)
+{
+    DLNode *s, *r;
+    r = findDLNode(C, p);
+    s = (DLNode *)malloc(sizeof(DLNode));
+    s->data = x;
+
+    s->next = r->next; // 先链入要插入的结点前驱和后继指向
+    s->prior = r;
+    r->next = s; // 更新插入结点的前驱和后继结点的指向
+    if (s->next != NULL)
+    {
+        s->next->prior = s;
+    }
+}
+
+// 4
+void deleteDLNode(DLNode *C, int p)
+{
+    DLNode *s, *r;
+    r = findDLNode(C, p);
+
+    s = r->next;
+    r->next = s->next;
+    s->next->prior = r;
+    free(s);
+}
 
 /*循环链表的操作*/
 
