@@ -30,16 +30,6 @@ typedef struct DLNode
     struct DLNode *next;  // 指向后继节点的指针
 } DLNode;
 
-int main(int argc, char const *argv[])
-{
-    /* code */
-
-    LNode *L = (LNode *)malloc(sizeof(LNode));
-    DLNode *DL = (DLNode *)malloc(sizeof(DLNode));
-
-    return 0;
-}
-
 /*顺序表的操作
  * 1. 按元素值的查找算法
  * 2. 插入数据元素的算法
@@ -117,7 +107,7 @@ int deleteElem(Sqlist &L, int p, int &e) // 需要改变的变量用引用型
 
 /*单链表的操作（默认是带头结点的链表）
  * 1. 建表（尾插法）
- * 2. 建表（头插法）
+ * 2. 建表（头插法）（会逆置元素序列）
  * 3. 合并两个单链表（升序）
  * 4. 合并两个单链表（降序）
  * 5. 查找及删除结点
@@ -477,3 +467,194 @@ void difference(LNode *A, LNode *B)
  * 30. B
  * 31. ① B -> C ② B ③ A
  */
+/* 二.
+ * 1.(1) 1)链表储存，因为动态变化效率更高，而且链表存储内存不要求连续，在表总数发生变化时不容易出现内存碎片
+ *       2) 此时应用顺序表存储，因为顺序表的查询效率为O(1).
+ * (2) 因为尾指针可以快速访问头指针，达到快速访问头和尾的作用，如果设置头指针访问尾指针却需要遍历链表。
+ *
+ */
+// (3)
+void reverse(Sqlist &L) // L要改变，故用引用型
+{
+    int i, j;
+    int temp;                                      // 辅助变量，用于交换
+    for (i = 0, j = L.length - 1; i < j; ++i, --j) // 当i与j相遇时，结束交换
+    {
+        temp = L.data[i];
+        L.data[i] = L.data[j];
+        L.data[j] = temp;
+    }
+}
+
+// (4)
+void deleteT(Sqlist &L, int i, int j) // L要改变，故用引用型
+{
+    int k, delta;
+    delta = j - i + 1; // 元素要移动的距离
+    for (k = j + 1; k < L.length; ++k)
+    {
+        L.data[k - delta] = L.data[k]; // 用第k个元素去覆盖它前边的第delta个元素
+    }
+    L.length -= delta; // 表长改变
+}
+
+// (5)
+void move(Sqlist &L) // L要改变，用引用型
+{
+    int i = 0, j = L.length - 1;
+    int temp = L.data[i];
+    while (i < j)
+    {
+        while (i < j && L.data[j] > temp) // j从右往左扫描，寻找第一个比temp小的元素，同时检查i<j
+            --j;
+        if (i < j)
+        {
+            L.data[i] = L.data[j]; // 移动元素
+            i++;                   // i右移
+        }
+        while (i < j && L.data[i] > temp) // i从左往右扫描，寻找第一个比temp大的元素，同时检查i<j
+            ++i;
+
+        if (i < j)
+        {
+            L.data[j] = L.data[i]; // 移动元素
+            j--;                   // j左移
+        }
+    }
+    L.data[i] = temp; // 表头元素放置结束位置
+}
+
+// (6)
+void delsll(LNode *L)
+{
+    LNode *p = L->next, *q;
+    while (p->next != NULL)
+    {
+        if (p->data == p->next->data) // 找到重复结点并删除
+        {
+            q = p->next;
+            p->next = q->next;
+            free(q);
+        }
+        else
+        {
+            p = p->next
+        }
+    }
+}
+
+void delsll2(LNode *L)
+{
+    LNode *p = L->next;
+    LNode *q = L->next->next;
+    LNode *r;
+    while (q != NULL)
+    {
+        while (q != NULL && q->data == p->data)
+        {
+            q = q->next;
+        }
+        if (q != NULL)
+        {
+            p = p->next;
+            p->data = q->data;
+        }
+    }
+    q = p->next;
+    p->next = NULL;
+    while (q != NULL)
+    {
+        r = q;
+        q = q->next;
+        free(r);
+    }
+}
+
+// (7)
+void delsllmin(LNode *L)
+{
+    LNode *pre = L->next;
+    LNode *p = pre->next;
+    LNode *minpre = pre;
+    LNode *minp = p;
+    while (p != NULL) // 查找最小结点minp以及前驱结点minpre
+    {
+        if (minp->data > p->data)
+        {
+            minp = p;
+            minpre = pre;
+        }
+
+        pre = p;
+        p = p->next;
+    }
+    minpre->next = minp->next; // 删除*minp结点
+    free(minp);
+}
+
+// (8)
+void reversel(LNode *L)
+{
+    LNode *p = L->next, *q;
+    L->next = NULL;
+    while (p != NULL) // p结点始终指向旧的链表的开始结点
+    {
+        q = p->next;       // q结点作为辅助结点记录p的直接后继结点的位置
+        p->next = L->next; // 头插法，将p结点插入L结点
+        L->next = p;
+        p = q; // 因为后继结点已经存入q中，所以p仍然可以找到后继
+    }
+}
+
+// (9)
+void split2(LNode *A, LNode *&B)
+{
+    LNode *a, *b, *r;
+    B = (LNode *)malloc(sizeof(LNode));
+    B->next = NULL;
+
+    a = A;
+    b = B;
+
+    while (a->next != NULL)
+    {
+        if (a->next->data % 2 == 0)
+        {
+            r = a->next; // 拆下偶数结点，并将结点后重新链回A
+            a->next = r->next;
+            r->next = NULL;
+
+            b->next = r; // B链入偶数结点并后移一位
+            b = r;
+        }
+        else
+        {
+            a = a->next; // 奇数结点A继续遍历
+        }
+    }
+}
+
+int main(int argc, char const *argv[])
+{
+    /* code */
+
+    LNode *L = (LNode *)malloc(sizeof(LNode));
+    DLNode *DL = (DLNode *)malloc(sizeof(DLNode));
+
+    // 课后习题 1.(3)
+    Sqlist sqL;
+    initList(sqL);
+    for (int i = 0; i < 5; i++)
+    {
+        sqL.data[i] = i + 1;
+    }
+    sqL.length = 5;
+
+    // reverse(sqL);
+    deleteT(sqL, 1, 2);
+    for (int i = 0; i < sqL.length; i++)
+    {
+        printf("%d", sqL.data[i]);
+    }
+    return 0;
+}
