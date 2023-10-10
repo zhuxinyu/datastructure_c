@@ -46,6 +46,7 @@ typedef struct
 /*顺序栈的状态和操作*/
 
 /**
+ * 三个状态
  * 1. 栈空：st.top == -1;
  * 2. 栈满：st.top == maxSize - 1;
  * 3. 非法：上溢和下溢
@@ -97,6 +98,67 @@ int pop(SqStack &st, int &x)
     }
     x = st.data[st.top];
     --(st.top);
+    return 1;
+}
+
+/*链栈的状态和操作*/
+
+/**
+ * 两个状态
+ * 1. 栈空：lst->next = NULL;
+ * 2. 栈满：假设内存无限大则不存在栈满情况;
+ */
+
+/**
+ * 两个操作
+ * 1. 进栈：p->next = lst->next; lst->next = p; 其实是头插法建立链表中的插入操作
+ * 2. 出栈：p = lst->next; x = p->data; lst->next = p->next; free(p); 其实就是单链表的删除操作
+ */
+
+// 初始化
+void initLStack(LNode *&lst) // lst要改变，用引用型
+{
+    lst = (LNode *)malloc(sizeof(LNode)); // 制造一个头结点
+    lst->next = NULL;
+}
+
+// 栈空
+int isEmptylst(LNode *lst)
+{
+    if (lst->next == NULL)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+// 进栈
+void pushlst(LNode *lst, int x)
+{
+    LNode *p;
+    p = (LNode *)malloc(sizeof(LNode));
+    p->next = NULL;
+
+    p->data = x;
+    p->next = lst->next;
+    lst->next = p;
+}
+
+// 出栈
+int poplst(LNode *lst, int &x)
+{
+    LNode *p;
+    if (lst->next == NULL)
+    {
+        return 0;
+    }
+    p = lst->next;
+    x = p->data;
+    lst->next = p->next;
+    free(p);
     return 1;
 }
 
