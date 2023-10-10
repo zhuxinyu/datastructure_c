@@ -264,3 +264,55 @@ int com(char exp[]) // 后缀式计算函数
     }
     return stack[top];
 }
+
+/*链栈应用*/
+
+/**
+ * 例3-3
+ * 用不带头结点的单链表储存链栈，设计初始化栈，判断栈是否为空，进栈和出栈等响应的算法。
+ */
+
+// 初始化
+void initStackl(LNode *&lst)
+{
+    lst = NULL
+}
+
+// 判空
+int isEmptyl(LNode *lst)
+{
+    if (lst == NULL)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+// 进栈
+void pushl(LNode *&lst, int x)
+{
+    LNode *p;
+    p = (LNode *)malloc(sizeof(LNode));
+    p->next = NULL;
+    p->data = x;
+    p->next = lst;
+    lst = p;
+}
+
+// 出栈
+int popl(LNode *&lst, int &x)
+{
+    LNode *p;
+    if (lst == NULL) // 栈空情况
+    {
+        return 0;
+    }
+    p = lst;
+    x = p->data;
+    lst = p->next;
+    free(p);
+    return 1;
+}
