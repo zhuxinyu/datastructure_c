@@ -172,3 +172,95 @@ int main(int argc, char const *argv[])
     x = stack[top--];
     return 0;
 }
+
+/*顺序栈应用*/
+
+/**
+ * 例3-1
+ * C语言里算法表达式中的括号只有小括号。编写算法，判断一个表达式中的括号是否正确配对，表达式已经存入字符数组exp[]中，表达式中的字符个数为n。
+ */
+
+int match(char exp[], int n)
+{
+    char stack[maxSize]; // 两句话完成栈的定义和初始化，考试中用这种简写方法可以节省时间
+    int top = -1;
+
+    int i;
+    for (i = 0; i < n; ++i)
+    {
+        if (exp[i] == '(')      // 如果遇到"("则入栈等待以后处理
+            stack[++top] = '('; // 一句话完成入栈操作
+        if (exp[i] == ')')
+        {
+            if (top == -1) // 如果遇到")"并且栈一空，则不匹配，返回0
+            {
+                return 0;
+            }
+            else // 如果栈不空，则出栈，相当于完成了一对匹配
+            {
+                --top;
+            }
+        }
+    }
+    if (top == -1) // 栈空则所有括号都被处理掉，说明括号是匹配的
+    {
+        return 1;
+    }
+    else // 否则括号不匹配
+    {
+        return 0;
+    }
+}
+
+/**
+ * 例3-2
+ * 编写一个函数，求后缀式的数值，其中后缀式存于一个字符数组exp中，exp中最后一个字符为”\0“，作为结束符，并且假设后缀式中的数字都只有一位。本题中所出现的除法运算，皆为整除运算，如2/3结果为0，3/2结果为1。
+ */
+
+int op(int a, char Op, int b) // 本函数是运算函数，用来完成算是”a op b“的运算
+{
+    if (Op == '+')
+        return a + b;
+    if (Op == '-')
+        return a - b;
+    if (Op == '*')
+        return a * b;
+    if (Op == '/')
+    {
+        if (b == 0) // 这里需要判断，如果除数为0，则输出错误标记
+        {
+            std::cout << "Error" << std::endl;
+            return 0;
+        }
+        else
+        {
+            return a / b;
+        }
+    }
+    return 0; // op无效时返回0
+}
+
+int com(char exp[]) // 后缀式计算函数
+{
+    int i, a, b, r;     // a,b 为操作数，r来保存结果
+    int stack[maxSize]; // 栈的初始化和定义，操作数可能出现多为避免计算错误使用int型
+    int top = -1;
+
+    char op; // 操作符
+    for (i = 0; exp[i] != '\0'; ++i)
+    {
+        if (exp[i] >= '0' && exp[i] <= '9') // 如遇操作数入栈处理
+        {
+            stack[++top] = exp[i] - '0'; // 字符型转成整型
+        }
+        else // 如遇运算符，开始运算
+        {
+            op = exp[i];      // 取运算符
+            b = stack[top--]; // 取第二个操作数
+            a = stack[top--]; // 取第一个操作数
+            r = op(a, op, b); // 运算结果保存在r中
+            stack[++top] = r; // 运算结果入栈
+        }
+    }
+    return stack[top];
+}
