@@ -352,26 +352,106 @@ int isQueueEmpty(SqQueue qu)
     }
 }
 
-// 进队
+// 入队
 int enQueue(SqQueue &qu, int x)
 {
-    if ((qu.rear + 1) % maxSize == qu.front)
+    if ((qu.rear + 1) % maxSize == qu.front) // 队满的判断条件，队满则不能入队
     {
         reutrn 0;
     }
-    qu.rear = (qu.rear + 1) % maxSize;
-    qu.data[qu.rear] = x;
+    qu.rear = (qu.rear + 1) % maxSize; // 若队未满，则先移动指针
+    qu.data[qu.rear] = x;              // 再存入元素
     return 1;
 }
 
 // 出队
 int deQueue(SqQueue &qu, int &x)
 {
-    if (qu.front == qu.rear)
+    if (qu.front == qu.rear) // 若队空，则不能出队
     {
         return 0;
     }
-    qu.front = (qu.front + 1) % maxSize;
-    x = qu.data[qu.front];
+    qu.front = (qu.front + 1) % maxSize; // 若队不空，则先移动指针
+    x = qu.data[qu.front];               // 再取出元素
+    return 1;
+}
+
+/*链队*/
+
+/*链队的状态和操作*/
+
+/**
+ * 两个状态
+ * 1. 队空状态： lqu->rear == NULL 或者 lqu->front == NULL (为何有两种情况，因为队列为空时，新结点会同时赋给首尾)
+ * 2. 队满状态： 假设内存无限大的情况下，不存在队列满的情况
+ */
+
+/**
+ * 两个操作
+ * 1. 进队：lqu->rear->next = p; lqu->rear = p;
+ * 2. 出队：p = lqu->front; lqu->front = p.next; x = p->data; free(p);
+ */
+
+// 初始化
+void initLQueue(LiQueue *&lqu)
+{
+    lqu = (LiQueue *)malloc(sizeof(LiQueue));
+    lqu->front = lqu->rear = NULL;
+}
+
+// 队空
+int isLQueueEmpty(LiQueue *lqu)
+{
+    if (lqu->rear == NULL || lqu->front == NULL) // 队首或队尾为空即为空队
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+// 入队
+void enLQueue(LiQueue *lqu, int x)
+{
+    QNode *p;
+    p = (QNode *)malloc(sizeof(QNode));
+    p->data = x;
+    p->next = NULL;
+
+    if (lqu->rear == NULL) // 若队列为空，则新结点是队首结点，也是队尾结点
+    {
+        lqu->front = lqu->rear = p;
+    }
+    else
+    {
+        lqu->rear->next = p; // 将新结点链接到队尾，rear指向它
+        lqu->rear = p;
+    }
+}
+
+// 出队
+int deLQueue(LiQueue *lqu, int &x)
+{
+    QNode *p;
+    if (lqu->rear == NULL) // 队空不能出队
+    {
+        return 0;
+    }
+    else
+    {
+        p = lqu->front;
+    }
+    if (lqu->front == lqu->rear) // 队列中只有一个结点时的出队操作需特殊处理
+    {
+        lqu->front = lqu->rear = NULL
+    }
+    else
+    {
+        lqu->front = lqu->front->next;
+    }
+    x = p->data;
+    free(p);
     return 1;
 }
