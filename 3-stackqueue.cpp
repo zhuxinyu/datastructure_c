@@ -316,3 +316,62 @@ int popl(LNode *&lst, int &x)
     free(p);
     return 1;
 }
+
+/*顺序队*/
+
+/*循环队列的状态和操作*/
+
+/**
+ * 两个状态
+ * 1. 队空状态：qu.rear == qu.front;
+ * 2. 队满状态：(qu.rear+1)%maxSize == qu.front;
+ */
+
+/**
+ * 两个操作
+ * 1. x进队（移动队尾指针）：qu.rear = (qu.rear+1)%maxSize; qu.data[qu.rear] = x;
+ * 2. x出队（移动队首指针）：qu.front = (qu.front + 1)%maxSize; x = qu.data[qu.front];
+ */
+
+// 初始化
+void initQueue(SqQueue &qu)
+{
+    qu.front = qu.rear = 0; // 队首和队尾指针重合，并且指向0
+}
+
+// 队空
+int isQueueEmpty(SqQueue qu)
+{
+    if (qu.front == qu.rear)
+    {
+        return 1; // 不论队首、队尾指针指向数组的那个位置，只要两者重合，即为队空
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+// 进队
+int enQueue(SqQueue &qu, int x)
+{
+    if ((qu.rear + 1) % maxSize == qu.front)
+    {
+        reutrn 0;
+    }
+    qu.rear = (qu.rear + 1) % maxSize;
+    qu.data[qu.rear] = x;
+    return 1;
+}
+
+// 出队
+int deQueue(SqQueue &qu, int &x)
+{
+    if (qu.front == qu.rear)
+    {
+        return 0;
+    }
+    qu.front = (qu.front + 1) % maxSize;
+    x = qu.data[qu.front];
+    return 1;
+}
